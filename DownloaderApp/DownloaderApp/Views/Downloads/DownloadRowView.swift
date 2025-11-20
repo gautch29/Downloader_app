@@ -111,8 +111,7 @@ struct StatusBadge: View {
                 addedAt: Date(),
                 startedAt: Date(),
                 completedAt: nil,
-                errorMessage: nil,
-                pathId: 1
+                errorMessage: nil
             ),
             onCancel: {}
         )
