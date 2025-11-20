@@ -1,0 +1,146 @@
+//
+//  DownloadRowView.swift
+//  DownloaderApp
+//
+//  Created on 2025-11-20.
+//
+
+import SwiftUI
+
+struct DownloadRowView: View {
+    let download: Download
+    let onCancel: () -> Void
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            // Filename and status
+            HStack {
+                Text(download.displayFilename)
+                    .font(.headline)
+                    .lineLimit(1)
+                
+                Spacer()
+                
+                StatusBadge(status: download.status)
+            }
+            
+            // Progress bar (if downloading)
+            if download.status == .downloading || download.status == .pending {
+                ProgressView(value: download.progress ?? 0)
+                    .tint(.blue)
+                
+                HStack {
+                    Text("\(download.progressPercentage)%")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    
+                    Spacer()
+                    
+                    if let speed = download.speed {
+                        Text(download.formattedSpeed)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+            }
+            
+            // Size and date
+            HStack {
+                if let size = download.size {
+                    Label(download.formattedSize, systemImage: "doc.fill")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                
+                Spacer()
+                
+                Text(download.addedAt.timeAgo())
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            
+            // Error message
+            if let errorMessage = download.errorMessage {
+                Text(errorMessage)
+                    .font(.caption)
+                    .foregroundStyle(.red)
+                    .lineLimit(2)
+            }
+        }
+        .padding(.vertical, 8)
+        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+            if download.status == .downloading || download.status == .pending {
+                Button(role: .destructive) {
+                    onCancel()
+                } label: {
+                    Label("Cancel", systemImage: "xmark.circle")
+                }
+            }
+        }
+    }
+}
+
+struct StatusBadge: View {
+    let status: DownloadStatus
+    
+    var body: some View {
+        Text(status.displayName)
+            .font(.caption.bold())
+            .padding(.horizontal, 8)
+            .padding(.vertical, 4)
+            .background(statusColor.opacity(0.2))
+            .foregroundStyle(statusColor)
+            .clipShape(Capsule())
+    }
+    
+    private var statusColor: Color {
+        switch status {
+        case .pending: return .gray
+        case .downloading: return .blue
+        case .completed: return .green
+        case .error: return .red
+        case .cancelled: return .orange
+        case .paused: return .yellow
+        }
+    }
+}
+
+#Preview {
+    List {
+        DownloadRowView(
+            download: Download(
+                id: 1,
+                url: "https://1fichier.com/example",
+                filename: "example_file.zip",
+                status: .downloading,
+                progress: 0.65,
+                size: 1024 * 1024 * 150,
+                speed: 1024 * 1024 * 5,
+                addedAt: Date(),
+                startedAt: Date(),
+                completedAt: nil,
+                errorMessage: nil,
+                pathId: 1
+            ),
+            onCancel: {}
+        )
+        
+        DownloadRowView(
+            download: Download(
+                id: 2,
+                url: "https://1fichier.com/example2",
+                filename: "completed_file.zip",
+                status: .completed,
+                progress: 1.0,
+                size: 1024 * 1024 * 200,
+                speed: nil,
+                addedAt: Date().addingTimeInterval(-3600),
+                startedAt: Date().addingTimeInterval(-3600),
+                completedAt: Date(),
+                errorMessage: nil,
+                pathId: 1
+            ),
+            onCancel: {}
+        )
+    }
+}
