@@ -55,6 +55,21 @@ class MoviesViewModel: ObservableObject {
         isLoading = false
     }
     
+    func getLinks(for quality: MovieQuality) async -> String? {
+        isLoading = true
+        errorMessage = nil
+        
+        do {
+            let links = try await movieService.getMovieLinks(url: quality.url)
+            isLoading = false
+            return links.first
+        } catch {
+            errorMessage = error.localizedDescription
+            isLoading = false
+            return nil
+        }
+    }
+    
     func getLinksAndDownload(quality: MovieQuality, targetPath: String? = nil) async -> Bool {
         isLoading = true
         errorMessage = nil

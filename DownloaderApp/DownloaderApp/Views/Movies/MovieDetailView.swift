@@ -12,7 +12,7 @@ struct MovieDetailView: View {
     @StateObject private var viewModel = MoviesViewModel()
 
     
-    @State private var selectedQuality: MovieQuality?
+    @State private var safariURL: URL?
 
     
     var body: some View {
@@ -63,7 +63,13 @@ struct MovieDetailView: View {
                         
                         ForEach(qualities) { quality in
                             QualityRow(quality: quality) {
-                                selectedQuality = quality
+                                Task {
+                                    if let link = await viewModel.getLinks(for: quality) {
+                                        if let url = URL(string: link) {
+                                            safariURL = url
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
@@ -77,13 +83,18 @@ struct MovieDetailView: View {
             }
         }
         .navigationBarTitleDisplayMode(.inline)
-        .sheet(item: $selectedQuality) { quality in
-            if let url = URL(string: quality.url) {
-                SafariView(url: url)
-                    .ignoresSafeArea()
+        .sheet(item: $safariURL) { url in
+            SafariView(url: url)
+                .ignoresSafeArea()
+        }
+        .overlay {
+            if viewModel.isLoading {
+                ProgressView()
+                    .padding()
+                    .background(.regularMaterial)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
             }
         }
-
         .alert("Error", isPresented: Binding(
             get: { viewModel.errorMessage != nil },
             set: { if !$0 { viewModel.errorMessage = nil } }
@@ -95,7 +106,10 @@ struct MovieDetailView: View {
             }
         }
     }
-    
+}
+
+extension URL: Identifiable {
+    public var id: String { absoluteString }
 }
 
 struct QualityRow: View {
