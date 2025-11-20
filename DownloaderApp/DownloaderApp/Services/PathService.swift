@@ -50,7 +50,11 @@ class PathService {
     
     func deletePath(name: String) async throws {
         // Backend uses query parameter for delete
-        let endpoint = "\(Constants.Endpoints.paths)?name=\(name.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? name)"
+        guard let encodedName = name.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
+            throw APIError.invalidURL
+        }
+        
+        let endpoint = "\(Constants.Endpoints.paths)?name=\(encodedName)"
         let response: PathActionResponse = try await client.delete(endpoint)
         
         if !response.success {

@@ -29,10 +29,16 @@ class AuthViewModel: ObservableObject {
         
         do {
             let user = try await authService.login(username: username, password: password)
-            currentUser = user
-            isAuthenticated = true
+            // Update state on main thread to ensure UI updates
+            await MainActor.run {
+                self.currentUser = user
+                self.isAuthenticated = true
+            }
         } catch {
-            errorMessage = error.localizedDescription
+            await MainActor.run {
+                self.errorMessage = error.localizedDescription
+                self.isAuthenticated = false
+            }
         }
         
         isLoading = false
