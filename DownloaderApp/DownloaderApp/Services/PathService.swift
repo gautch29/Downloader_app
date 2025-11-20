@@ -90,7 +90,8 @@ class PathService {
     
     func browsePath(path: String? = nil) async throws -> BrowseResponse {
         var endpoint = Constants.Endpoints.paths + "/browse"
-        if let path = path, let encodedPath = path.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) {
+        let pathParam = path ?? "/"
+        if let encodedPath = pathParam.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) {
             endpoint += "?path=\(encodedPath)"
         }
         
