@@ -33,36 +33,7 @@ struct DownloadsListView: View {
     
     var body: some View {
         NavigationStack {
-            ZStack(alignment: .top) {
-                Group {
-                    if viewModel.isLoading && viewModel.downloads.isEmpty {
-                        ProgressView("Loading downloads...")
-                    } else if viewModel.downloads.isEmpty {
-                        ContentUnavailableView(
-                            "No Downloads",
-                            systemImage: "arrow.down.circle",
-                            description: Text("Add a 1fichier URL to start downloading")
-                        )
-                    } else {
-                        List {
-                            ForEach(filteredDownloads) { download in
-                                NavigationLink {
-                                    DownloadDetailView(download: download, viewModel: viewModel)
-                                } label: {
-                                    DownloadRowView(download: download) {
-                                        Task {
-                                            await viewModel.cancelDownload(download)
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        .refreshable {
-                            await viewModel.fetchDownloads()
-                        }
-                    }
-                }
-                
+            VStack(spacing: 0) {
                 if let clipboardURL = viewModel.clipboardURL {
                     VStack {
                         HStack {
@@ -90,7 +61,37 @@ struct DownloadsListView: View {
                     }
                     .padding()
                     .transition(.move(edge: .top).combined(with: .opacity))
-                    .zIndex(1)
+                }
+                
+                Group {
+                    if viewModel.isLoading && viewModel.downloads.isEmpty {
+                        ProgressView("Loading downloads...")
+                            .frame(maxHeight: .infinity)
+                    } else if viewModel.downloads.isEmpty {
+                        ContentUnavailableView(
+                            "No Downloads",
+                            systemImage: "arrow.down.circle",
+                            description: Text("Add a 1fichier URL to start downloading")
+                        )
+                        .frame(maxHeight: .infinity)
+                    } else {
+                        List {
+                            ForEach(filteredDownloads) { download in
+                                NavigationLink {
+                                    DownloadDetailView(download: download, viewModel: viewModel)
+                                } label: {
+                                    DownloadRowView(download: download) {
+                                        Task {
+                                            await viewModel.cancelDownload(download)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        .refreshable {
+                            await viewModel.fetchDownloads()
+                        }
+                    }
                 }
             }
             .navigationTitle("Downloads")

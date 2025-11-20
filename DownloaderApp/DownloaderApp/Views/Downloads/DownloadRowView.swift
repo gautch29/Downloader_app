@@ -26,7 +26,7 @@ struct DownloadRowView: View {
             
             // Progress bar (if downloading)
             if download.status == .downloading || download.status == .pending {
-                ProgressView(value: download.progress ?? 0)
+                ProgressView(value: (download.progress ?? 0) / 100.0)
                     .tint(.blue)
                 
                 HStack {

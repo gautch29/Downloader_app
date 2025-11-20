@@ -29,7 +29,7 @@ struct DownloadDetailView: View {
                             Text("\(download.progressPercentage)%")
                                 .foregroundStyle(.secondary)
                         }
-                        ProgressView(value: download.progress ?? 0)
+                        ProgressView(value: (download.progress ?? 0) / 100.0)
                     }
                     
                     if download.speed != nil {

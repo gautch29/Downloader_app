@@ -78,7 +78,7 @@ struct Download: Codable, Identifiable {
     
     var progressPercentage: Int {
         guard let progress = progress else { return 0 }
-        return Int(progress * 100)
+        return Int(progress)
     }
     
     var formattedSpeed: String {
