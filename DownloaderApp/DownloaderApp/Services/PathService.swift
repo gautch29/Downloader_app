@@ -73,4 +73,48 @@ class PathService {
             throw APIError.serverError("Failed to set default path")
         }
     }
+    
+    // MARK: - File Browser API
+    
+    struct BrowseResponse: Codable {
+        let currentPath: String
+        let folders: [BrowserFolder]
+    }
+    
+    struct BrowserFolder: Codable, Identifiable {
+        let name: String
+        let path: String
+        
+        var id: String { path }
+    }
+    
+    func browsePath(path: String? = nil) async throws -> BrowseResponse {
+        var endpoint = Constants.Endpoints.paths + "/browse"
+        if let path = path, let encodedPath = path.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) {
+            endpoint += "?path=\(encodedPath)"
+        }
+        
+        return try await client.get(endpoint)
+    }
+    
+    struct CreateFolderRequest: Codable {
+        let parentPath: String
+        let folderName: String
+    }
+    
+    struct CreateFolderResponse: Codable {
+        let success: Bool
+        let path: String
+    }
+    
+    func createFolder(parentPath: String, folderName: String) async throws -> String {
+        let request = CreateFolderRequest(parentPath: parentPath, folderName: folderName)
+        let response: CreateFolderResponse = try await client.post(Constants.Endpoints.paths + "/create-folder", body: request)
+        
+        if response.success {
+            return response.path
+        } else {
+            throw APIError.serverError("Failed to create folder")
+        }
+    }
 }

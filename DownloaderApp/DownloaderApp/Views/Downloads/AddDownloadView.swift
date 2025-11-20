@@ -15,8 +15,12 @@ struct AddDownloadView: View {
     var initialUrl: String = ""
     
     @State private var url = ""
+    @State private var customFilename = ""
     @State private var selectedPathId: String?
+    @State private var browserPath: String?
     @State private var isAdding = false
+    
+    @State private var showingFileBrowser = false
     
     var body: some View {
         NavigationStack {
@@ -27,9 +31,12 @@ struct AddDownloadView: View {
                         .autocapitalization(.none)
                         .autocorrectionDisabled()
                         .keyboardType(.URL)
-                } header: {
+                    
+                    TextField("Custom Filename (Optional)", text: $customFilename)
+                        .autocorrectionDisabled()
+                } header {
                     Text("Download URL")
-                } footer: {
+                } footer {
                     if !url.isEmpty && !url.is1FichierURL {
                         Text("Please enter a valid 1fichier.com URL")
                             .foregroundStyle(.red)
@@ -37,13 +44,45 @@ struct AddDownloadView: View {
                 }
                 
                 Section("Download Path") {
-                    Picker("Path", selection: $selectedPathId) {
-                        Text("Default Path")
-                            .tag(String?.none)
+                    VStack(alignment: .leading, spacing: 10) {
+                        if let browserPath = browserPath {
+                            HStack {
+                                VStack(alignment: .leading) {
+                                    Text("Selected Path")
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                    Text(browserPath)
+                                        .font(.subheadline)
+                                        .lineLimit(1)
+                                        .truncationMode(.middle)
+                                }
+                                
+                                Spacer()
+                                
+                                Button {
+                                    self.browserPath = nil
+                                } label: {
+                                    Image(systemName: "xmark.circle.fill")
+                                        .foregroundStyle(.gray)
+                                }
+                                .buttonStyle(.borderless)
+                            }
+                        } else {
+                            Picker("Shortcut", selection: $selectedPathId) {
+                                Text("Default Path")
+                                    .tag(String?.none)
+                                
+                                ForEach(pathsViewModel.paths) { path in
+                                    Text(path.name)
+                                        .tag(String?.some(path.id))
+                                }
+                            }
+                        }
                         
-                        ForEach(pathsViewModel.paths) { path in
-                            Text(path.name)
-                                .tag(String?.some(path.id))
+                        Button {
+                            showingFileBrowser = true
+                        } label: {
+                            Label(browserPath == nil ? "Browse Server..." : "Change Path...", systemImage: "folder")
                         }
                     }
                 }
@@ -68,15 +107,18 @@ struct AddDownloadView: View {
                     Button("Add Download") {
                         isAdding = true
                         Task {
-                            // Find the selected path string
+                            // Determine target path
                             var targetPath: String? = nil
-                            if let pathId = selectedPathId {
+                            
+                            if let browserPath = browserPath {
+                                targetPath = browserPath
+                            } else if let pathId = selectedPathId {
                                 if let path = pathsViewModel.paths.first(where: { $0.id == pathId }) {
                                     targetPath = path.path
                                 }
                             }
                             
-                            await downloadsViewModel.addDownload(url: url, targetPath: targetPath)
+                            await downloadsViewModel.addDownload(url: url, customFilename: customFilename.isEmpty ? nil : customFilename, targetPath: targetPath)
                             isAdding = false
                             dismiss()
                         }
@@ -89,6 +131,11 @@ struct AddDownloadView: View {
                     url = initialUrl
                 }
                 await pathsViewModel.fetchPaths()
+            }
+            .sheet(isPresented: $showingFileBrowser) {
+                NavigationStack {
+                    FileBrowserView(initialPath: nil, selectedPath: $browserPath)
+                }
             }
         }
     }
