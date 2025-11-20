@@ -65,14 +65,20 @@ struct AddDownloadView: View {
                 }
                 
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Add") {
+                    Button("Add Download") {
+                        isAdding = true
                         Task {
-                            isAdding = true
-                            let success = await downloadsViewModel.addDownload(url: url, pathId: selectedPathId)
-                            isAdding = false
-                            if success {
-                                dismiss()
+                            // Find the selected path string
+                            var targetPath: String? = nil
+                            if let pathId = selectedPathId {
+                                if let path = pathsViewModel.paths.first(where: { $0.id == pathId }) {
+                                    targetPath = path.path
+                                }
                             }
+                            
+                            await downloadsViewModel.addDownload(url: url, targetPath: targetPath)
+                            isAdding = false
+                            dismiss()
                         }
                     }
                     .disabled(!url.is1FichierURL || isAdding)

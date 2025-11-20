@@ -13,17 +13,14 @@ struct DownloadsResponse: Codable {
 
 struct AddDownloadRequest: Codable {
     let url: String
-    let pathId: Int?
-    
-    enum CodingKeys: String, CodingKey {
-        case url
-        case pathId = "path_id"
-    }
+    let customFilename: String?
+    let targetPath: String?
 }
 
 struct AddDownloadResponse: Codable {
     let success: Bool
     let download: Download?
+    let message: String?
 }
 
 class DownloadService {
@@ -37,17 +34,14 @@ class DownloadService {
         return response.downloads
     }
     
-    func addDownload(url: String, pathId: Int? = nil) async throws -> Download {
-        let request = AddDownloadRequest(
-            url: url,
-            pathId: pathId
-        )
+    func addDownload(url: String, targetPath: String? = nil, customFilename: String? = nil) async throws -> Download {
+        let request = AddDownloadRequest(url: url, customFilename: customFilename, targetPath: targetPath)
         let response: AddDownloadResponse = try await client.post(Constants.Endpoints.downloads, body: request)
         
         if response.success, let download = response.download {
             return download
         } else {
-            throw APIError.serverError("Failed to add download")
+            throw APIError.serverError(response.message ?? "Failed to add download")
         }
     }
     

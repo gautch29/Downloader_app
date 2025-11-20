@@ -11,6 +11,7 @@ struct Download: Codable, Identifiable {
     let id: Int
     let url: String
     let filename: String?
+    let customFilename: String?
     let status: DownloadStatus
     let progress: Double? // 0.0-1.0
     let size: Int64? // bytes
@@ -20,9 +21,12 @@ struct Download: Codable, Identifiable {
     let completedAt: Date?
     let errorMessage: String?
     let pathId: Int?
+    let targetPath: String?
     
     enum CodingKeys: String, CodingKey {
         case id, url, filename, status, progress, size, speed
+        case customFilename = "customFilename" // Try camelCase first based on user snippet
+        case targetPath = "targetPath"
         case addedAt = "added_at"
         case startedAt = "started_at"
         case completedAt = "completed_at"
@@ -44,6 +48,10 @@ struct Download: Codable, Identifiable {
         
         self.url = try container.decode(String.self, forKey: .url)
         self.filename = try container.decodeIfPresent(String.self, forKey: .filename)
+        
+        // Handle customFilename (try both camelCase and snake_case keys manually if needed, but start with CodingKeys)
+        self.customFilename = try container.decodeIfPresent(String.self, forKey: .customFilename)
+        
         self.status = try container.decode(DownloadStatus.self, forKey: .status)
         self.progress = try container.decodeIfPresent(Double.self, forKey: .progress)
         self.size = try container.decodeIfPresent(Int64.self, forKey: .size)
@@ -53,7 +61,7 @@ struct Download: Codable, Identifiable {
         self.completedAt = try container.decodeIfPresent(Date.self, forKey: .completedAt)
         self.errorMessage = try container.decodeIfPresent(String.self, forKey: .errorMessage)
         
-        // Handle pathId as Int or String
+        // Handle pathId
         if let pathIdInt = try? container.decodeIfPresent(Int.self, forKey: .pathId) {
             self.pathId = pathIdInt
         } else if let pathIdString = try? container.decodeIfPresent(String.self, forKey: .pathId), let pathIdInt = Int(pathIdString) {
@@ -61,13 +69,17 @@ struct Download: Codable, Identifiable {
         } else {
             self.pathId = nil
         }
+        
+        // Handle targetPath
+        self.targetPath = try container.decodeIfPresent(String.self, forKey: .targetPath)
     }
     
     // Default init for previews/tests
-    init(id: Int, url: String, filename: String? = nil, status: DownloadStatus, progress: Double? = nil, size: Int64? = nil, speed: Int64? = nil, addedAt: Date, startedAt: Date? = nil, completedAt: Date? = nil, errorMessage: String? = nil, pathId: Int? = nil) {
+    init(id: Int, url: String, filename: String? = nil, customFilename: String? = nil, status: DownloadStatus, progress: Double? = nil, size: Int64? = nil, speed: Int64? = nil, addedAt: Date, startedAt: Date? = nil, completedAt: Date? = nil, errorMessage: String? = nil, pathId: Int? = nil, targetPath: String? = nil) {
         self.id = id
         self.url = url
         self.filename = filename
+        self.customFilename = customFilename
         self.status = status
         self.progress = progress
         self.size = size
@@ -77,6 +89,7 @@ struct Download: Codable, Identifiable {
         self.completedAt = completedAt
         self.errorMessage = errorMessage
         self.pathId = pathId
+        self.targetPath = targetPath
     }
     
     var progressPercentage: Int {

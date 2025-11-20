@@ -55,17 +55,23 @@ class DownloadsViewModel: ObservableObject {
         isLoading = false
     }
     
-    func addDownload(url: String, pathId: Int? = nil) async -> Bool {
+    func addDownload(url: String, targetPath: String? = nil) async {
+        isLoading = true
         errorMessage = nil
         
         do {
-            let newDownload = try await downloadService.addDownload(url: url, pathId: pathId)
-            downloads.insert(newDownload, at: 0)
-            return true
+            let _ = try await downloadService.addDownload(url: url, targetPath: targetPath)
+            await fetchDownloads()
+            
+            // Clear clipboard if it matches
+            if let clipboard = clipboardURL, clipboard == url {
+                clipboardURL = nil
+            }
         } catch {
             errorMessage = error.localizedDescription
-            return false
         }
+        
+        isLoading = false
     }
     
     func cancelDownload(_ download: Download) async {
