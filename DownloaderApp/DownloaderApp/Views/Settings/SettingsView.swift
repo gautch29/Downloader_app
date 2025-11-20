@@ -89,9 +89,7 @@ struct SettingsView: View {
                     Text("Account")
                 }
                 
-                } header: {
-                    Text("App Information")
-                }
+
                 
                 Section {
                     TextField("Server URL", text: Binding(
