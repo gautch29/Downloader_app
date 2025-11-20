@@ -15,7 +15,7 @@ struct AddDownloadView: View {
     var initialUrl: String = ""
     
     @State private var url = ""
-    @State private var selectedPathId: Int?
+    @State private var selectedPathId: String?
     @State private var isAdding = false
     
     var body: some View {
