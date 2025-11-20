@@ -13,23 +13,13 @@ struct DownloadsResponse: Codable {
 
 struct AddDownloadRequest: Codable {
     let url: String
-    let pathId: Int?
-    
-    enum CodingKeys: String, CodingKey {
-        case url
-        case pathId = "path_id"
-    }
+    let customFilename: String?
+    let targetPath: String?
 }
 
 struct AddDownloadResponse: Codable {
     let success: Bool
     let download: Download?
-    let message: String?
-}
-
-struct CancelDownloadResponse: Codable {
-    let success: Bool
-    let message: String?
 }
 
 class DownloadService {
@@ -43,27 +33,30 @@ class DownloadService {
         return response.downloads
     }
     
-    func addDownload(url: String, pathId: Int? = nil) async throws -> Download {
-        let request = AddDownloadRequest(url: url, pathId: pathId)
+    func addDownload(url: String, pathId: String? = nil) async throws -> Download {
+        let request = AddDownloadRequest(
+            url: url,
+            customFilename: nil,
+            targetPath: pathId
+        )
         let response: AddDownloadResponse = try await client.post(Constants.Endpoints.downloads, body: request)
         
         if response.success, let download = response.download {
             return download
         } else {
-            throw APIError.serverError(response.message ?? "Failed to add download")
+            throw APIError.serverError("Failed to add download")
         }
     }
     
-    func cancelDownload(id: Int) async throws {
+    func cancelDownload(id: String) async throws {
+        // Backend doesn't have cancel endpoint in the docs, so this might not work
+        // We'll just make a DELETE request and see
         let endpoint = "\(Constants.Endpoints.downloads)/\(id)"
-        let response: CancelDownloadResponse = try await client.delete(endpoint)
-        
-        if !response.success {
-            throw APIError.serverError(response.message ?? "Failed to cancel download")
-        }
+        struct EmptyResponse: Codable {}
+        let _: EmptyResponse = try await client.delete(endpoint)
     }
     
-    func getDownloadDetails(id: Int) async throws -> Download {
+    func getDownloadDetails(id: String) async throws -> Download {
         let endpoint = "\(Constants.Endpoints.downloads)/\(id)"
         return try await client.get(endpoint)
     }

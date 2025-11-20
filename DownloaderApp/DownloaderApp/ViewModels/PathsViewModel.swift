@@ -53,12 +53,9 @@ class PathsViewModel: ObservableObject {
             try await pathService.setDefaultPath(id: path.id)
             // Update local state
             paths = paths.map { p in
-                DownloadPath(
-                    id: p.id,
-                    name: p.name,
-                    path: p.path,
-                    isDefault: p.id == path.id
-                )
+                var updated = p
+                updated.isDefault = (p.id == path.id)
+                return updated
             }
         } catch {
             errorMessage = error.localizedDescription
@@ -69,7 +66,7 @@ class PathsViewModel: ObservableObject {
         errorMessage = nil
         
         do {
-            try await pathService.deletePath(id: path.id)
+            try await pathService.deletePath(name: path.name)
             paths.removeAll { $0.id == path.id }
         } catch {
             errorMessage = error.localizedDescription

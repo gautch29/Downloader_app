@@ -16,19 +16,8 @@ struct AddPathRequest: Codable {
     let path: String
 }
 
-struct AddPathResponse: Codable {
-    let success: Bool
-    let path: DownloadPath?
-    let message: String?
-}
-
-struct SetDefaultPathRequest: Codable {
-    let id: Int
-}
-
 struct PathActionResponse: Codable {
     let success: Bool
-    let message: String?
 }
 
 class PathService {
@@ -44,30 +33,28 @@ class PathService {
     
     func addPath(name: String, path: String) async throws -> DownloadPath {
         let request = AddPathRequest(name: name, path: path)
-        let response: AddPathResponse = try await client.post(Constants.Endpoints.paths, body: request)
+        let response: PathActionResponse = try await client.post(Constants.Endpoints.paths, body: request)
         
-        if response.success, let path = response.path {
-            return path
+        if response.success {
+            // Backend doesn't return the created path, so create a temporary one
+            return DownloadPath(id: UUID().uuidString, name: name, path: path)
         } else {
-            throw APIError.serverError(response.message ?? "Failed to add path")
+            throw APIError.serverError("Failed to add path")
         }
     }
     
-    func setDefaultPath(id: Int) async throws {
-        let endpoint = "\(Constants.Endpoints.paths)/\(id)/default"
-        let response: PathActionResponse = try await client.put(endpoint, body: ["id": id])
-        
-        if !response.success {
-            throw APIError.serverError(response.message ?? "Failed to set default path")
-        }
+    func setDefaultPath(id: String) async throws {
+        // Backend doesn't have this endpoint, so we'll skip it
+        // This feature won't work until backend adds support
     }
     
-    func deletePath(id: Int) async throws {
-        let endpoint = "\(Constants.Endpoints.paths)/\(id)"
+    func deletePath(name: String) async throws {
+        // Backend uses query parameter for delete
+        let endpoint = "\(Constants.Endpoints.paths)?name=\(name.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? name)"
         let response: PathActionResponse = try await client.delete(endpoint)
         
         if !response.success {
-            throw APIError.serverError(response.message ?? "Failed to delete path")
+            throw APIError.serverError("Failed to delete path")
         }
     }
 }

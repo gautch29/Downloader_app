@@ -55,7 +55,7 @@ class DownloadsViewModel: ObservableObject {
         isLoading = false
     }
     
-    func addDownload(url: String, pathId: Int? = nil) async -> Bool {
+    func addDownload(url: String, pathId: String? = nil) async -> Bool {
         errorMessage = nil
         
         do {
@@ -73,22 +73,8 @@ class DownloadsViewModel: ObservableObject {
         
         do {
             try await downloadService.cancelDownload(id: download.id)
-            if let index = downloads.firstIndex(where: { $0.id == download.id }) {
-                downloads[index] = Download(
-                    id: download.id,
-                    url: download.url,
-                    filename: download.filename,
-                    status: .cancelled,
-                    progress: download.progress,
-                    size: download.size,
-                    speed: nil,
-                    addedAt: download.addedAt,
-                    startedAt: download.startedAt,
-                    completedAt: nil,
-                    errorMessage: nil,
-                    pathId: download.pathId
-                )
-            }
+            // Refresh downloads to get updated status
+            await fetchDownloads()
         } catch {
             errorMessage = error.localizedDescription
         }

@@ -12,20 +12,13 @@ struct SettingsResponse: Codable {
 }
 
 struct UpdateSettingsRequest: Codable {
-    let fichierApiKey: String?
     let plexUrl: String?
     let plexToken: String?
-    
-    enum CodingKeys: String, CodingKey {
-        case fichierApiKey = "1fichier_api_key"
-        case plexUrl = "plex_url"
-        case plexToken = "plex_token"
-    }
+    let defaultPath: String?
 }
 
 struct UpdateSettingsResponse: Codable {
     let success: Bool
-    let message: String?
 }
 
 class SettingsService {
@@ -41,14 +34,14 @@ class SettingsService {
     
     func updateSettings(_ settings: AppSettings) async throws {
         let request = UpdateSettingsRequest(
-            fichierApiKey: settings.fichierApiKey,
             plexUrl: settings.plexUrl,
-            plexToken: settings.plexToken
+            plexToken: settings.plexToken,
+            defaultPath: settings.defaultPath
         )
         let response: UpdateSettingsResponse = try await client.put(Constants.Endpoints.settings, body: request)
         
         if !response.success {
-            throw APIError.serverError(response.message ?? "Failed to update settings")
+            throw APIError.serverError("Failed to update settings")
         }
     }
 }

@@ -13,7 +13,7 @@ struct AddDownloadView: View {
     @ObservedObject var pathsViewModel: PathsViewModel
     
     @State private var url = ""
-    @State private var selectedPathId: Int?
+    @State private var selectedPathId: String?
     @State private var isAdding = false
     
     var body: some View {
@@ -37,11 +37,11 @@ struct AddDownloadView: View {
                 Section("Download Path") {
                     Picker("Path", selection: $selectedPathId) {
                         Text("Default Path")
-                            .tag(nil as Int?)
+                            .tag(nil as String?)
                         
                         ForEach(pathsViewModel.paths) { path in
                             Text(path.name)
-                                .tag(path.id as Int?)
+                                .tag(path.id as String?)
                         }
                     }
                 }

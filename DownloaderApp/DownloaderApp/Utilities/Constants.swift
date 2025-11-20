@@ -9,7 +9,8 @@ import Foundation
 
 enum Constants {
     // API Configuration
-    static let defaultBaseURL = "http://localhost:3000"
+    // Change this to your backend URL (e.g., "https://your-app.vercel.app")
+    static let defaultBaseURL = "https://dl.flgr.fr"
     static var baseURL: String {
         UserDefaults.standard.string(forKey: "api_base_url") ?? defaultBaseURL
     }

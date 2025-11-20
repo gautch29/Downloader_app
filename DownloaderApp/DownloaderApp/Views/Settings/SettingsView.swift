@@ -16,19 +16,6 @@ struct SettingsView: View {
         NavigationStack {
             Form {
                 Section {
-                    TextField("API Key", text: Binding(
-                        get: { viewModel.settings.fichierApiKey ?? "" },
-                        set: { viewModel.settings.fichierApiKey = $0.isEmpty ? nil : $0 }
-                    ))
-                    .autocapitalization(.none)
-                    .autocorrectionDisabled()
-                } header: {
-                    Text("1fichier Configuration")
-                } footer: {
-                    Text("Your 1fichier API key for premium downloads")
-                }
-                
-                Section {
                     TextField("Plex URL", text: Binding(
                         get: { viewModel.settings.plexUrl ?? "" },
                         set: { viewModel.settings.plexUrl = $0.isEmpty ? nil : $0 }

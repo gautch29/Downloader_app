@@ -8,6 +8,6 @@
 import Foundation
 
 struct User: Codable, Identifiable {
-    let id: Int
+    var id: String { username } // Use username as ID since backend doesn't return id
     let username: String
 }

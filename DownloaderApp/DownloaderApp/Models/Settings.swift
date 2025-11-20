@@ -8,18 +8,15 @@
 import Foundation
 
 struct AppSettings: Codable {
-    var fichierApiKey: String?
     var plexUrl: String?
     var plexToken: String?
+    var defaultPath: String?
+    var plexConfigured: Bool?
     
     enum CodingKeys: String, CodingKey {
-        case fichierApiKey = "1fichier_api_key"
-        case plexUrl = "plex_url"
-        case plexToken = "plex_token"
+        case plexUrl
+        case plexToken
+        case defaultPath
+        case plexConfigured
     }
-}
-
-struct SettingItem: Codable {
-    let key: String
-    let value: String
 }

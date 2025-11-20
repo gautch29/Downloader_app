@@ -8,44 +8,41 @@
 import Foundation
 
 struct Download: Codable, Identifiable {
-    let id: Int
+    let id: String
     let url: String
     let filename: String?
     let status: DownloadStatus
-    let progress: Double?
-    let size: Int64?
-    let speed: Int64?
-    let addedAt: Date
-    let startedAt: Date?
-    let completedAt: Date?
-    let errorMessage: String?
-    let pathId: Int?
+    let progress: Int? // 0-100 percentage
+    let speed: String? // Already formatted string like "1.5 MB/s"
+    let targetPath: String?
+    let createdAt: Date
+    let updatedAt: Date
     
     enum CodingKeys: String, CodingKey {
-        case id, url, filename, status, progress, size, speed
-        case addedAt = "added_at"
-        case startedAt = "started_at"
-        case completedAt = "completed_at"
-        case errorMessage = "error_message"
-        case pathId = "path_id"
+        case id, url, filename, status, progress, speed
+        case targetPath
+        case createdAt
+        case updatedAt
     }
     
     var progressPercentage: Int {
-        guard let progress = progress else { return 0 }
-        return Int(progress * 100)
+        progress ?? 0
     }
     
-    var formattedSize: String {
-        guard let size = size else { return "Unknown" }
-        return ByteCountFormatter.string(fromByteCount: size, countStyle: .file)
+    var progressDecimal: Double {
+        Double(progress ?? 0) / 100.0
     }
     
     var formattedSpeed: String {
-        guard let speed = speed else { return "" }
-        return "\(ByteCountFormatter.string(fromByteCount: speed, countStyle: .file))/s"
+        speed ?? ""
     }
     
     var displayFilename: String {
         filename ?? "Detecting filename..."
+    }
+    
+    // For compatibility with views that expect addedAt
+    var addedAt: Date {
+        createdAt
     }
 }
