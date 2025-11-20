@@ -44,46 +44,44 @@ struct AddDownloadView: View {
                 }
                 
                 Section("Download Path") {
-                    VStack(alignment: .leading, spacing: 10) {
-                        if let browserPath = browserPath {
-                            HStack {
-                                VStack(alignment: .leading) {
-                                    Text("Selected Path")
-                                        .font(.caption)
-                                        .foregroundStyle(.secondary)
-                                    Text(browserPath)
-                                        .font(.subheadline)
-                                        .lineLimit(1)
-                                        .truncationMode(.middle)
-                                }
-                                
-                                Spacer()
-                                
-                                Button {
-                                    self.browserPath = nil
-                                } label: {
-                                    Image(systemName: "xmark.circle.fill")
-                                        .foregroundStyle(.gray)
-                                }
-                                .buttonStyle(.borderless)
+                    if let browserPath = browserPath {
+                        HStack {
+                            VStack(alignment: .leading) {
+                                Text("Selected Path")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                                Text(browserPath)
+                                    .font(.subheadline)
+                                    .lineLimit(1)
+                                    .truncationMode(.middle)
                             }
-                        } else {
-                            Picker("Shortcut", selection: $selectedPathId) {
-                                Text("Default Path")
-                                    .tag(String?.none)
-                                
-                                ForEach(pathsViewModel.paths) { path in
-                                    Text(path.name)
-                                        .tag(String?.some(path.id))
-                                }
+                            
+                            Spacer()
+                            
+                            Button {
+                                self.browserPath = nil
+                            } label: {
+                                Image(systemName: "xmark.circle.fill")
+                                    .foregroundStyle(.gray)
+                            }
+                            .buttonStyle(.borderless)
+                        }
+                    } else {
+                        Picker("Shortcut", selection: $selectedPathId) {
+                            Text("Default Path")
+                                .tag(String?.none)
+                            
+                            ForEach(pathsViewModel.paths) { path in
+                                Text(path.name)
+                                    .tag(String?.some(path.id))
                             }
                         }
-                        
-                        Button {
-                            showingFileBrowser = true
-                        } label: {
-                            Label(browserPath == nil ? "Browse Server..." : "Change Path...", systemImage: "folder")
-                        }
+                    }
+                    
+                    Button {
+                        showingFileBrowser = true
+                    } label: {
+                        Label(browserPath == nil ? "Browse Server..." : "Change Path...", systemImage: "folder")
                     }
                 }
                 
