@@ -46,7 +46,7 @@ struct DownloadRowView: View {
             
             // Size and date
             HStack {
-                if let size = download.size {
+                if download.size != nil {
                     Text(download.formattedSize)
                         .font(.caption)
                         .foregroundStyle(.secondary)

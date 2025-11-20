@@ -60,7 +60,7 @@ class DownloadsViewModel: ObservableObject {
         errorMessage = nil
         
         do {
-            let _ = try await downloadService.addDownload(url: url, customFilename: customFilename, targetPath: targetPath)
+            let _ = try await downloadService.addDownload(url: url, targetPath: targetPath, customFilename: customFilename)
             await fetchDownloads()
             
             // Clear clipboard if it matches
