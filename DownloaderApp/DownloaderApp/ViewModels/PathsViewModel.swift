@@ -85,9 +85,17 @@ class FileBrowserViewModel: ObservableObject {
         errorMessage = nil
         
         do {
-            let response = try await pathService.browsePath(path: path)
-            self.currentPath = response.currentPath
-            self.folders = response.folders.sorted { $0.name.localizedStandardCompare($1.name) == .orderedAscending }
+            if let path = path {
+                let response = try await pathService.browsePath(path: path)
+                self.currentPath = response.currentPath
+                self.folders = response.folders.sorted { $0.name.localizedStandardCompare($1.name) == .orderedAscending }
+            } else {
+                // Root level: fetch shortcuts
+                let shortcuts = try await pathService.getPaths()
+                self.currentPath = "" // Root
+                self.folders = shortcuts.map { PathService.BrowserFolder(name: $0.name, path: $0.path) }
+                    .sorted { $0.name.localizedStandardCompare($1.name) == .orderedAscending }
+            }
         } catch {
             errorMessage = error.localizedDescription
         }
