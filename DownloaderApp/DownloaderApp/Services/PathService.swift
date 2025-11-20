@@ -20,6 +20,14 @@ struct PathActionResponse: Codable {
     let success: Bool
 }
 
+struct DeletePathResponse: Codable {
+    let success: Bool
+}
+
+struct SetDefaultPathResponse: Codable {
+    let success: Bool
+}
+
 class PathService {
     static let shared = PathService()
     private let client = APIClient.shared
