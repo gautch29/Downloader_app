@@ -93,6 +93,15 @@ struct MovieGridItem: View {
             .frame(height: 225)
             .clipShape(RoundedRectangle(cornerRadius: 12))
             .shadow(radius: 4)
+            .overlay(alignment: .topTrailing) {
+                if let inPlex = movie.inPlex, inPlex {
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(.title3)
+                        .foregroundStyle(.green)
+                        .background(Circle().fill(.white))
+                        .padding(8)
+                }
+            }
             
             VStack(alignment: .leading, spacing: 4) {
                 Text(movie.title)

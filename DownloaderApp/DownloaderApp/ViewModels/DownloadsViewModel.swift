@@ -93,6 +93,17 @@ class DownloadsViewModel: ObservableObject {
         refreshTimer = nil
     }
     
+    @Published var clipboardURL: String?
+    
+    func checkClipboard() {
+        if let string = UIPasteboard.general.string,
+           string.lowercased().contains("1fichier.com") {
+            clipboardURL = string
+        } else {
+            clipboardURL = nil
+        }
+    }
+    
     private func refreshDownloadsInBackground() async {
         do {
             downloads = try await downloadService.getDownloads()

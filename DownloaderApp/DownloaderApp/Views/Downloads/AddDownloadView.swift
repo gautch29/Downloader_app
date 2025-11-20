@@ -12,6 +12,8 @@ struct AddDownloadView: View {
     @ObservedObject var downloadsViewModel: DownloadsViewModel
     @ObservedObject var pathsViewModel: PathsViewModel
     
+    var initialUrl: String = ""
+    
     @State private var url = ""
     @State private var selectedPathId: String?
     @State private var isAdding = false
@@ -77,6 +79,9 @@ struct AddDownloadView: View {
                 }
             }
             .task {
+                if !initialUrl.isEmpty {
+                    url = initialUrl
+                }
                 await pathsViewModel.fetchPaths()
             }
         }

@@ -10,11 +10,10 @@ import SwiftUI
 struct MovieDetailView: View {
     let movie: Movie
     @StateObject private var viewModel = MoviesViewModel()
-    @StateObject private var pathsViewModel = PathsViewModel() // To get paths for download
+
     
     @State private var selectedQuality: MovieQuality?
-    @State private var showingDownloadConfirmation = false
-    @State private var selectedPathId: String?
+
     
     var body: some View {
         ScrollView {
@@ -65,7 +64,6 @@ struct MovieDetailView: View {
                         ForEach(qualities) { quality in
                             QualityRow(quality: quality) {
                                 selectedQuality = quality
-                                showingDownloadConfirmation = true
                             }
                         }
                     }
@@ -79,64 +77,13 @@ struct MovieDetailView: View {
             }
         }
         .navigationBarTitleDisplayMode(.inline)
-        .sheet(isPresented: $showingDownloadConfirmation) {
-            NavigationStack {
-                Form {
-                    Section {
-                        Text("Download \(movie.title)?")
-                            .font(.headline)
-                        
-                        if let quality = selectedQuality {
-                            LabeledContent("Quality", value: quality.displayQuality)
-                            LabeledContent("Language", value: quality.displayLanguage)
-                            if let size = quality.fileSize {
-                                LabeledContent("Size", value: size)
-                            }
-                        }
-                    }
-                    
-                    Section("Download Path") {
-                        Picker("Path", selection: $selectedPathId) {
-                            Text("Default Path")
-                                .tag(nil as String?)
-                            
-                            ForEach(pathsViewModel.paths) { path in
-                                Text(path.name)
-                                    .tag(path.id as String?)
-                            }
-                        }
-                    }
-                }
-                .navigationTitle("Confirm Download")
-                .navigationBarTitleDisplayMode(.inline)
-                .toolbar {
-                    ToolbarItem(placement: .cancellationAction) {
-                        Button("Cancel") {
-                            showingDownloadConfirmation = false
-                        }
-                    }
-                    
-                    ToolbarItem(placement: .confirmationAction) {
-                        Button("Download") {
-                            startDownload()
-                        }
-                        .disabled(viewModel.isLoading)
-                    }
-                }
-                .overlay {
-                    if viewModel.isLoading {
-                        ProgressView()
-                            .padding()
-                            .background(.regularMaterial)
-                            .clipShape(RoundedRectangle(cornerRadius: 8))
-                    }
-                }
+        .sheet(item: $selectedQuality) { quality in
+            if let url = URL(string: quality.url) {
+                SafariView(url: url)
+                    .ignoresSafeArea()
             }
-            .presentationDetents([.medium])
         }
-        .task {
-            await pathsViewModel.fetchPaths()
-        }
+
         .alert("Error", isPresented: Binding(
             get: { viewModel.errorMessage != nil },
             set: { if !$0 { viewModel.errorMessage = nil } }
@@ -149,20 +96,6 @@ struct MovieDetailView: View {
         }
     }
     
-    private func startDownload() {
-        guard let quality = selectedQuality else { return }
-        
-        Task {
-            let success = await viewModel.getLinksAndDownload(
-                quality: quality,
-                targetPath: selectedPathId
-            )
-            
-            if success {
-                showingDownloadConfirmation = false
-            }
-        }
-    }
 }
 
 struct QualityRow: View {
@@ -188,7 +121,7 @@ struct QualityRow: View {
                         .foregroundStyle(.secondary)
                 }
                 
-                Image(systemName: "arrow.down.circle.fill")
+                Image(systemName: "safari")
                     .font(.title2)
                     .foregroundStyle(.blue)
             }

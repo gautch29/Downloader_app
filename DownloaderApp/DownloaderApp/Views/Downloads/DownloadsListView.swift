@@ -11,6 +11,7 @@ struct DownloadsListView: View {
     @StateObject private var viewModel = DownloadsViewModel()
     @StateObject private var pathsViewModel = PathsViewModel()
     @State private var showingAddDownload = false
+    @Environment(\.scenePhase) var scenePhase
     @State private var selectedFilter: FilterOption = .all
     
     enum FilterOption: String, CaseIterable {
@@ -32,35 +33,75 @@ struct DownloadsListView: View {
     
     var body: some View {
         NavigationStack {
-            Group {
-                if viewModel.isLoading && viewModel.downloads.isEmpty {
-                    ProgressView("Loading downloads...")
-                } else if viewModel.downloads.isEmpty {
-                    ContentUnavailableView(
-                        "No Downloads",
-                        systemImage: "arrow.down.circle",
-                        description: Text("Add a 1fichier URL to start downloading")
-                    )
-                } else {
-                    List {
-                        ForEach(filteredDownloads) { download in
-                            NavigationLink {
-                                DownloadDetailView(download: download, viewModel: viewModel)
-                            } label: {
-                                DownloadRowView(download: download) {
-                                    Task {
-                                        await viewModel.cancelDownload(download)
+            ZStack(alignment: .top) {
+                Group {
+                    if viewModel.isLoading && viewModel.downloads.isEmpty {
+                        ProgressView("Loading downloads...")
+                    } else if viewModel.downloads.isEmpty {
+                        ContentUnavailableView(
+                            "No Downloads",
+                            systemImage: "arrow.down.circle",
+                            description: Text("Add a 1fichier URL to start downloading")
+                        )
+                    } else {
+                        List {
+                            ForEach(filteredDownloads) { download in
+                                NavigationLink {
+                                    DownloadDetailView(download: download, viewModel: viewModel)
+                                } label: {
+                                    DownloadRowView(download: download) {
+                                        Task {
+                                            await viewModel.cancelDownload(download)
+                                        }
                                     }
                                 }
                             }
                         }
+                        .refreshable {
+                            await viewModel.fetchDownloads()
+                        }
                     }
-                    .refreshable {
-                        await viewModel.fetchDownloads()
+                }
+                
+                if let clipboardURL = viewModel.clipboardURL {
+                    VStack {
+                        HStack {
+                            Image(systemName: "doc.on.clipboard")
+                                .foregroundStyle(.blue)
+                            VStack(alignment: .leading) {
+                                Text("Link found in clipboard")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                                Text(clipboardURL)
+                                    .font(.caption)
+                                    .lineLimit(1)
+                            }
+                            Spacer()
+                            Button("Add") {
+                                showingAddDownload = true
+                            }
+                            .buttonStyle(.borderedProminent)
+                            .controlSize(.small)
+                        }
+                        .padding()
+                        .background(Color(uiColor: .secondarySystemGroupedBackground))
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                        .shadow(radius: 2)
                     }
+                    .padding()
+                    .transition(.move(edge: .top).combined(with: .opacity))
+                    .zIndex(1)
                 }
             }
             .navigationTitle("Downloads")
+            .onAppear {
+                viewModel.checkClipboard()
+            }
+            .onChange(of: scenePhase) { newPhase in
+                if newPhase == .active {
+                    viewModel.checkClipboard()
+                }
+            }
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Menu {
@@ -84,7 +125,11 @@ struct DownloadsListView: View {
                 }
             }
             .sheet(isPresented: $showingAddDownload) {
-                AddDownloadView(downloadsViewModel: viewModel, pathsViewModel: pathsViewModel)
+                AddDownloadView(
+                    downloadsViewModel: viewModel,
+                    pathsViewModel: pathsViewModel,
+                    initialUrl: viewModel.clipboardURL ?? ""
+                )
             }
             .task {
                 await viewModel.fetchDownloads()
