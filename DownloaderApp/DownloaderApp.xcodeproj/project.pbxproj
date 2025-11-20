@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 77;
+	objectVersion = 63;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -44,7 +44,7 @@
 /* Begin PBXFileReference section */
 		08470B982EBA1E682A28138D /* PathsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PathsView.swift; sourceTree = "<group>"; };
 		1E141A9E902CDA101F4FD83A /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
-		28738FB63EF3C1FC97A4747A /* DownloaderApp.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = DownloaderApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		28738FB63EF3C1FC97A4747A /* DownloaderApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DownloaderApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2A9F6248690BC39214D2A129 /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 		2EB47EE233F7E5EDC8ED3237 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		2EC438F820CB22B69CBBAEEA /* AuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthService.swift; sourceTree = "<group>"; };
@@ -263,7 +263,6 @@
 			);
 			mainGroup = FA462D8E0C85EF87844F324A;
 			minimizedProjectReferenceProxies = 1;
-			preferredProjectObjectVersion = 77;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -332,6 +331,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				DEVELOPMENT_ASSET_PATHS = "\"DownloaderApp/Preview Content\"";
+				DEVELOPMENT_TEAM = HAL7H5WW52;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = DownloaderApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
@@ -354,6 +354,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				DEVELOPMENT_ASSET_PATHS = "\"DownloaderApp/Preview Content\"";
+				DEVELOPMENT_TEAM = HAL7H5WW52;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = DownloaderApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;

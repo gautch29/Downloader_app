@@ -92,8 +92,13 @@ class APIClient {
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.setValue("application/json", forHTTPHeaderField: "Accept")
         
+        print("🌐 [API] \(method) \(endpoint)")
+        
         if let body = body {
             request.httpBody = try encoder.encode(body)
+            if let bodyString = String(data: request.httpBody!, encoding: .utf8) {
+                print("📦 [API] Body: \(bodyString)")
+            }
         }
         
         do {
@@ -101,6 +106,11 @@ class APIClient {
             
             guard let httpResponse = response as? HTTPURLResponse else {
                 throw APIError.invalidResponse
+            }
+            
+            print("Testing [API] Response: \(httpResponse.statusCode) for \(endpoint)")
+            if let responseString = String(data: data, encoding: .utf8) {
+                 print("📄 [API] Response Data: \(responseString)")
             }
             
             switch httpResponse.statusCode {
@@ -144,8 +154,13 @@ class APIClient {
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.setValue("application/json", forHTTPHeaderField: "Accept")
         
+        print("🌐 [API] \(method) \(endpoint)")
+        
         if let jsonBody = jsonBody {
             request.httpBody = try JSONSerialization.data(withJSONObject: jsonBody)
+            if let bodyString = String(data: request.httpBody!, encoding: .utf8) {
+                print("📦 [API] Body: \(bodyString)")
+            }
         }
         
         do {
@@ -153,6 +168,11 @@ class APIClient {
             
             guard let httpResponse = response as? HTTPURLResponse else {
                 throw APIError.invalidResponse
+            }
+            
+            print("Testing [API] Response: \(httpResponse.statusCode) for \(endpoint)")
+            if let responseString = String(data: data, encoding: .utf8) {
+                 print("📄 [API] Response Data: \(responseString)")
             }
             
             switch httpResponse.statusCode {

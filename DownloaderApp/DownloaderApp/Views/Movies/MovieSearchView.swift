@@ -47,6 +47,22 @@ struct MovieSearchView: View {
                         .clipShape(RoundedRectangle(cornerRadius: 8))
                 }
             }
+            .overlay(alignment: .bottom) {
+                if let errorMessage = viewModel.errorMessage {
+                    Text(errorMessage)
+                        .font(.caption)
+                        .foregroundStyle(.white)
+                        .padding()
+                        .background(.red.opacity(0.8))
+                        .clipShape(Capsule())
+                        .padding()
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
+                        .onTapGesture {
+                            viewModel.errorMessage = nil
+                        }
+                }
+            }
+            .animation(.default, value: viewModel.errorMessage)
         }
     }
 }

@@ -89,16 +89,27 @@ struct SettingsView: View {
                     Text("Account")
                 }
                 
-                Section {
-                    HStack {
-                        Text("Server URL")
-                        Spacer()
-                        Text(Constants.baseURL)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
                 } header: {
                     Text("App Information")
+                }
+                
+                Section {
+                    TextField("Server URL", text: Binding(
+                        get: { UserDefaults.standard.string(forKey: "api_base_url") ?? Constants.defaultBaseURL },
+                        set: { UserDefaults.standard.set($0, forKey: "api_base_url") }
+                    ))
+                    .keyboardType(.URL)
+                    .autocapitalization(.none)
+                    .autocorrectionDisabled()
+                    
+                    Button("Reset to Default") {
+                        UserDefaults.standard.removeObject(forKey: "api_base_url")
+                    }
+                    .disabled(UserDefaults.standard.string(forKey: "api_base_url") == nil)
+                } header: {
+                    Text("Server Configuration")
+                } footer: {
+                    Text("Restart app after changing server URL")
                 }
             }
             .navigationTitle("Settings")

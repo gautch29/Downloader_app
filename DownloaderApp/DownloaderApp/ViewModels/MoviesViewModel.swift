@@ -42,10 +42,13 @@ class MoviesViewModel: ObservableObject {
     private func performSearch(query: String) async {
         isLoading = true
         errorMessage = nil
+        print("🔍 [ViewModel] Searching for: \(query)")
         
         do {
             movies = try await movieService.searchMovies(query: query)
+            print("✅ [ViewModel] Found \(movies.count) movies")
         } catch {
+            print("❌ [ViewModel] Search error: \(error)")
             errorMessage = error.localizedDescription
         }
         
