@@ -34,9 +34,9 @@ struct AddDownloadView: View {
                     
                     TextField("Custom Filename (Optional)", text: $customFilename)
                         .autocorrectionDisabled()
-                } header {
+                } header: {
                     Text("Download URL")
-                } footer {
+                } footer: {
                     if !url.isEmpty && !url.is1FichierURL {
                         Text("Please enter a valid 1fichier.com URL")
                             .foregroundStyle(.red)
