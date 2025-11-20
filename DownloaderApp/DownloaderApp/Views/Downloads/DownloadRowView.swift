@@ -36,7 +36,7 @@ struct DownloadRowView: View {
                     
                     Spacer()
                     
-                    if let speed = download.speed {
+                    if download.speed != nil {
                         Text(download.formattedSpeed)
                             .font(.caption)
                             .foregroundStyle(.secondary)
@@ -46,7 +46,7 @@ struct DownloadRowView: View {
             
             // Size and date
             HStack {
-                if let size = download.size {
+                if download.size != nil {
                     Label(download.formattedSize, systemImage: "doc.fill")
                         .font(.caption)
                         .foregroundStyle(.secondary)

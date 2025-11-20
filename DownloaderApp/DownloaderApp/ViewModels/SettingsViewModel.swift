@@ -43,7 +43,5 @@ class SettingsViewModel: ObservableObject {
             errorMessage = error.localizedDescription
             return false
         }
-        
-        isLoading = false
     }
 }

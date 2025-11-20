@@ -57,28 +57,28 @@ class APIClient {
     // MARK: - Generic Request Methods
     
     func get<T: Decodable>(_ endpoint: String) async throws -> T {
-        try await request(endpoint: endpoint, method: "GET")
+        try await requestWithEncodable(endpoint: endpoint, method: "GET")
     }
     
     func post<T: Decodable, U: Encodable>(_ endpoint: String, body: U) async throws -> T {
-        try await request(endpoint: endpoint, method: "POST", body: body)
+        try await requestWithEncodable(endpoint: endpoint, method: "POST", body: body)
     }
     
     func post<T: Decodable>(_ endpoint: String, body: [String: Any]) async throws -> T {
-        try await request(endpoint: endpoint, method: "POST", jsonBody: body)
+        try await requestWithDictionary(endpoint: endpoint, method: "POST", jsonBody: body)
     }
     
     func delete<T: Decodable>(_ endpoint: String) async throws -> T {
-        try await request(endpoint: endpoint, method: "DELETE")
+        try await requestWithEncodable(endpoint: endpoint, method: "DELETE")
     }
     
     func put<T: Decodable, U: Encodable>(_ endpoint: String, body: U) async throws -> T {
-        try await request(endpoint: endpoint, method: "PUT", body: body)
+        try await requestWithEncodable(endpoint: endpoint, method: "PUT", body: body)
     }
     
     // MARK: - Private Request Handler
     
-    private func request<T: Decodable, U: Encodable>(
+    private func requestWithEncodable<T: Decodable, U: Encodable>(
         endpoint: String,
         method: String,
         body: U? = nil as String?
@@ -130,7 +130,7 @@ class APIClient {
         }
     }
     
-    private func request<T: Decodable>(
+    private func requestWithDictionary<T: Decodable>(
         endpoint: String,
         method: String,
         jsonBody: [String: Any]? = nil

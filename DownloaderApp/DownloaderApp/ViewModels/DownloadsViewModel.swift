@@ -38,7 +38,8 @@ class DownloadsViewModel: ObservableObject {
     }
     
     deinit {
-        stopAutoRefresh()
+        refreshTimer?.invalidate()
+        refreshTimer = nil
     }
     
     func fetchDownloads() async {

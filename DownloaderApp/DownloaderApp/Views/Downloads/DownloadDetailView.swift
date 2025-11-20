@@ -32,7 +32,7 @@ struct DownloadDetailView: View {
                         ProgressView(value: download.progress ?? 0)
                     }
                     
-                    if let speed = download.speed {
+                    if download.speed != nil {
                         HStack {
                             Text("Speed")
                             Spacer()
@@ -46,7 +46,7 @@ struct DownloadDetailView: View {
             Section("Details") {
                 DetailRow(label: "Filename", value: download.displayFilename)
                 
-                if let size = download.size {
+                if download.size != nil {
                     DetailRow(label: "Size", value: download.formattedSize)
                 }
                 
