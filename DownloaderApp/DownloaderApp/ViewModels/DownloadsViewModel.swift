@@ -55,12 +55,12 @@ class DownloadsViewModel: ObservableObject {
         isLoading = false
     }
     
-    func addDownload(url: String, targetPath: String? = nil) async {
+    func addDownload(url: String, customFilename: String? = nil, targetPath: String? = nil) async {
         isLoading = true
         errorMessage = nil
         
         do {
-            let _ = try await downloadService.addDownload(url: url, targetPath: targetPath)
+            let _ = try await downloadService.addDownload(url: url, customFilename: customFilename, targetPath: targetPath)
             await fetchDownloads()
             
             // Clear clipboard if it matches

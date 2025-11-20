@@ -58,7 +58,7 @@ struct DownloadDetailView: View {
                 
                 DetailRow(label: "Added", value: download.addedAt.formatted())
                 
-                if let size = download.size {
+                if download.size != nil {
                     DetailRow(label: "Size", value: download.formattedSize)
                 }
                 
