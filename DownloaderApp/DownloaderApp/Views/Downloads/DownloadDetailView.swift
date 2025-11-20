@@ -56,16 +56,14 @@ struct DownloadDetailView: View {
             Section("Details") {
                 DetailRow(label: "Filename", value: download.displayFilename)
                 
-                DetailRow(title: "Filename", value: download.displayFilename)
-                
-                DetailRow(title: "Added", value: download.addedAt.formatted())
+                DetailRow(label: "Added", value: download.addedAt.formatted())
                 
                 if let size = download.size {
-                    DetailRow(title: "Size", value: download.formattedSize)
+                    DetailRow(label: "Size", value: download.formattedSize)
                 }
                 
                 if let targetPath = download.targetPath {
-                    DetailRow(title: "Target Path", value: targetPath)
+                    DetailRow(label: "Target Path", value: targetPath)
                 }
             }
             

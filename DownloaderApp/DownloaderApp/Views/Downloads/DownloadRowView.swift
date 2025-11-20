@@ -129,7 +129,7 @@ struct StatusBadge: View {
                 startedAt: Date().addingTimeInterval(-3500),
                 completedAt: Date(),
                 errorMessage: nil,
-                pathId: 1
+                targetPath: "films"
             ),
             onCancel: {}
         )
