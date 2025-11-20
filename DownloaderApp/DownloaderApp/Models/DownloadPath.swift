@@ -8,7 +8,7 @@
 import Foundation
 
 struct DownloadPath: Codable, Identifiable {
-    let id: Int
+    let id: String
     let name: String
     let path: String
     let isDefault: Bool
@@ -21,13 +21,13 @@ struct DownloadPath: Codable, Identifiable {
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         
-        // Handle ID as Int or String
-        if let idInt = try? container.decode(Int.self, forKey: .id) {
-            self.id = idInt
-        } else if let idString = try? container.decode(String.self, forKey: .id), let idInt = Int(idString) {
-            self.id = idInt
+        // Handle ID as String (primary) or Int (convert to String)
+        if let idString = try? container.decode(String.self, forKey: .id) {
+            self.id = idString
+        } else if let idInt = try? container.decode(Int.self, forKey: .id) {
+            self.id = String(idInt)
         } else {
-            throw DecodingError.typeMismatch(Int.self, DecodingError.Context(codingPath: container.codingPath, debugDescription: "Expected Int or String for id"))
+            throw DecodingError.typeMismatch(String.self, DecodingError.Context(codingPath: container.codingPath, debugDescription: "Expected String or Int for id"))
         }
         
         self.name = try container.decode(String.self, forKey: .name)
@@ -59,7 +59,7 @@ struct DownloadPath: Codable, Identifiable {
     }
     
     // Default init for previews/tests
-    init(id: Int, name: String, path: String, isDefault: Bool) {
+    init(id: String, name: String, path: String, isDefault: Bool) {
         self.id = id
         self.name = name
         self.path = path

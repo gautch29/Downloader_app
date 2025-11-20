@@ -46,10 +46,6 @@ class PathsViewModel: ObservableObject {
         }
     }
     
-    func setDefaultPath(_ path: DownloadPath) async {
-        errorMessage = nil
-        
-        do {
             try await pathService.setDefaultPath(id: path.id)
             // Refresh paths to get updated default status
             await fetchPaths()

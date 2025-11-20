@@ -47,17 +47,21 @@ class PathService {
         }
     }
     
-    func setDefaultPath(id: Int) async throws {
-        let endpoint = "\(Constants.Endpoints.paths)/\(id)/default"
-        let _: PathActionResponse = try await client.put(endpoint, body: ["": ""]) // Empty body
-    }
-    
-    func deletePath(id: Int) async throws {
-        let endpoint = "\(Constants.Endpoints.paths)/\(id)"
-        let response: PathActionResponse = try await client.delete(endpoint)
+    func deletePath(id: String) async throws {
+        let endpoint = Constants.Endpoints.paths + "/\(id)"
+        let response: DeletePathResponse = try await client.delete(endpoint)
         
         if !response.success {
             throw APIError.serverError("Failed to delete path")
+        }
+    }
+    
+    func setDefaultPath(id: String) async throws {
+        let endpoint = Constants.Endpoints.paths + "/\(id)/default"
+        let response: SetDefaultPathResponse = try await client.put(endpoint)
+        
+        if !response.success {
+            throw APIError.serverError("Failed to set default path")
         }
     }
 }

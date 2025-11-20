@@ -25,13 +25,12 @@ struct Download: Codable, Identifiable {
     
     enum CodingKeys: String, CodingKey {
         case id, url, filename, status, progress, size, speed
-        case customFilename = "customFilename" // Try camelCase first based on user snippet
+        case customFilename = "customFilename"
         case targetPath = "targetPath"
-        case addedAt = "added_at"
-        case startedAt = "started_at"
-        case completedAt = "completed_at"
-        case errorMessage = "error_message"
-        case pathId = "path_id"
+        case addedAt = "createdAt"
+        case startedAt = "updatedAt" // Mapping startedAt to updatedAt as it seems to be the closest equivalent
+        case completedAt = "completed_at" // Keep this if backend adds it later, or make optional
+        case errorMessage = "error" // Backend returns "error" key
     }
     
     init(from decoder: Decoder) throws {
@@ -48,10 +47,7 @@ struct Download: Codable, Identifiable {
         
         self.url = try container.decode(String.self, forKey: .url)
         self.filename = try container.decodeIfPresent(String.self, forKey: .filename)
-        
-        // Handle customFilename (try both camelCase and snake_case keys manually if needed, but start with CodingKeys)
         self.customFilename = try container.decodeIfPresent(String.self, forKey: .customFilename)
-        
         self.status = try container.decode(DownloadStatus.self, forKey: .status)
         self.progress = try container.decodeIfPresent(Double.self, forKey: .progress)
         self.size = try container.decodeIfPresent(Int64.self, forKey: .size)
@@ -61,16 +57,9 @@ struct Download: Codable, Identifiable {
         self.completedAt = try container.decodeIfPresent(Date.self, forKey: .completedAt)
         self.errorMessage = try container.decodeIfPresent(String.self, forKey: .errorMessage)
         
-        // Handle pathId
-        if let pathIdInt = try? container.decodeIfPresent(Int.self, forKey: .pathId) {
-            self.pathId = pathIdInt
-        } else if let pathIdString = try? container.decodeIfPresent(String.self, forKey: .pathId), let pathIdInt = Int(pathIdString) {
-            self.pathId = pathIdInt
-        } else {
-            self.pathId = nil
-        }
+        // pathId is removed/ignored as backend uses targetPath
+        self.pathId = nil
         
-        // Handle targetPath
         self.targetPath = try container.decodeIfPresent(String.self, forKey: .targetPath)
     }
     

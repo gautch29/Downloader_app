@@ -39,11 +39,11 @@ struct AddDownloadView: View {
                 Section("Download Path") {
                     Picker("Path", selection: $selectedPathId) {
                         Text("Default Path")
-                            .tag(nil as Int?)
+                            .tag(String?.none)
                         
                         ForEach(pathsViewModel.paths) { path in
                             Text(path.name)
-                                .tag(path.id as Int?)
+                                .tag(String?.some(path.id))
                         }
                     }
                 }
