@@ -66,7 +66,8 @@ class PathService {
     
     func setDefaultPath(id: String) async throws {
         let endpoint = Constants.Endpoints.paths + "/\(id)/default"
-        let response: SetDefaultPathResponse = try await client.put(endpoint)
+        struct EmptyBody: Codable {}
+        let response: SetDefaultPathResponse = try await client.put(endpoint, body: EmptyBody())
         
         if !response.success {
             throw APIError.serverError("Failed to set default path")
