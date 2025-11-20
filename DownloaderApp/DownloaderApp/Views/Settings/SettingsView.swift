@@ -38,6 +38,16 @@ struct SettingsView: View {
                 }
                 
                 Section {
+                    NavigationLink {
+                        PathsView()
+                    } label: {
+                        Label("Manage Download Paths", systemImage: "folder")
+                    }
+                } header: {
+                    Text("Configuration")
+                }
+                
+                Section {
                     Button {
                         Task {
                             _ = await viewModel.saveSettings()

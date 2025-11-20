@@ -17,10 +17,7 @@ struct MainTabView: View {
                     Label("Downloads", systemImage: "arrow.down.circle")
                 }
             
-            PathsView()
-                .tabItem {
-                    Label("Paths", systemImage: "folder")
-                }
+
             
             MovieSearchView()
                 .tabItem {
