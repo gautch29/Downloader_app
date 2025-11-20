@@ -8,41 +8,93 @@
 import Foundation
 
 struct Download: Codable, Identifiable {
-    let id: String
+    let id: Int
     let url: String
     let filename: String?
     let status: DownloadStatus
-    let progress: Int? // 0-100 percentage
-    let speed: String? // Already formatted string like "1.5 MB/s"
-    let targetPath: String?
-    let createdAt: Date
-    let updatedAt: Date
+    let progress: Double? // 0.0-1.0
+    let size: Int64? // bytes
+    let speed: Int64? // bytes/sec
+    let addedAt: Date
+    let startedAt: Date?
+    let completedAt: Date?
+    let errorMessage: String?
+    let pathId: Int?
     
     enum CodingKeys: String, CodingKey {
-        case id, url, filename, status, progress, speed
-        case targetPath
-        case createdAt
-        case updatedAt
+        case id, url, filename, status, progress, size, speed
+        case addedAt = "added_at"
+        case startedAt = "started_at"
+        case completedAt = "completed_at"
+        case errorMessage = "error_message"
+        case pathId = "path_id"
+    }
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        
+        // Handle ID as Int or String
+        if let idInt = try? container.decode(Int.self, forKey: .id) {
+            self.id = idInt
+        } else if let idString = try? container.decode(String.self, forKey: .id), let idInt = Int(idString) {
+            self.id = idInt
+        } else {
+            throw DecodingError.typeMismatch(Int.self, DecodingError.Context(codingPath: container.codingPath, debugDescription: "Expected Int or String for id"))
+        }
+        
+        self.url = try container.decode(String.self, forKey: .url)
+        self.filename = try container.decodeIfPresent(String.self, forKey: .filename)
+        self.status = try container.decode(DownloadStatus.self, forKey: .status)
+        self.progress = try container.decodeIfPresent(Double.self, forKey: .progress)
+        self.size = try container.decodeIfPresent(Int64.self, forKey: .size)
+        self.speed = try container.decodeIfPresent(Int64.self, forKey: .speed)
+        self.addedAt = try container.decode(Date.self, forKey: .addedAt)
+        self.startedAt = try container.decodeIfPresent(Date.self, forKey: .startedAt)
+        self.completedAt = try container.decodeIfPresent(Date.self, forKey: .completedAt)
+        self.errorMessage = try container.decodeIfPresent(String.self, forKey: .errorMessage)
+        
+        // Handle pathId as Int or String
+        if let pathIdInt = try? container.decodeIfPresent(Int.self, forKey: .pathId) {
+            self.pathId = pathIdInt
+        } else if let pathIdString = try? container.decodeIfPresent(String.self, forKey: .pathId), let pathIdInt = Int(pathIdString) {
+            self.pathId = pathIdInt
+        } else {
+            self.pathId = nil
+        }
+    }
+    
+    // Default init for previews/tests
+    init(id: Int, url: String, filename: String? = nil, status: DownloadStatus, progress: Double? = nil, size: Int64? = nil, speed: Int64? = nil, addedAt: Date, startedAt: Date? = nil, completedAt: Date? = nil, errorMessage: String? = nil, pathId: Int? = nil) {
+        self.id = id
+        self.url = url
+        self.filename = filename
+        self.status = status
+        self.progress = progress
+        self.size = size
+        self.speed = speed
+        self.addedAt = addedAt
+        self.startedAt = startedAt
+        self.completedAt = completedAt
+        self.errorMessage = errorMessage
+        self.pathId = pathId
     }
     
     var progressPercentage: Int {
-        progress ?? 0
-    }
-    
-    var progressDecimal: Double {
-        Double(progress ?? 0) / 100.0
+        guard let progress = progress else { return 0 }
+        return Int(progress * 100)
     }
     
     var formattedSpeed: String {
-        speed ?? ""
+        guard let speed = speed else { return "" }
+        return ByteCountFormatter.string(fromByteCount: speed, countStyle: .file) + "/s"
+    }
+    
+    var formattedSize: String {
+        guard let size = size else { return "" }
+        return ByteCountFormatter.string(fromByteCount: size, countStyle: .file)
     }
     
     var displayFilename: String {
         filename ?? "Detecting filename..."
-    }
-    
-    // For compatibility with views that expect addedAt
-    var addedAt: Date {
-        createdAt
     }
 }

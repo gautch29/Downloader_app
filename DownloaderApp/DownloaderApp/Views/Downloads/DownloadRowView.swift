@@ -26,7 +26,7 @@ struct DownloadRowView: View {
             
             // Progress bar (if downloading)
             if download.status == .downloading || download.status == .pending {
-                ProgressView(value: download.progressDecimal)
+                ProgressView(value: download.progress ?? 0)
                     .tint(.blue)
                 
                 HStack {
@@ -46,6 +46,12 @@ struct DownloadRowView: View {
             
             // Size and date
             HStack {
+                if let size = download.size {
+                    Text(download.formattedSize)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                
                 Spacer()
                 
                 Text(download.addedAt.timeAgo())
@@ -95,30 +101,36 @@ struct StatusBadge: View {
     List {
         DownloadRowView(
             download: Download(
-                id: "1",
+                id: 1,
                 url: "https://1fichier.com/example",
                 filename: "example_file.zip",
                 status: .downloading,
-                progress: 65,
-                speed: "5 MB/s",
-                targetPath: "/downloads",
-                createdAt: Date(),
-                updatedAt: Date()
+                progress: 0.65,
+                size: 1024 * 1024 * 100,
+                speed: 1024 * 1024 * 5,
+                addedAt: Date(),
+                startedAt: Date(),
+                completedAt: nil,
+                errorMessage: nil,
+                pathId: 1
             ),
             onCancel: {}
         )
         
         DownloadRowView(
             download: Download(
-                id: "2",
+                id: 2,
                 url: "https://1fichier.com/example2",
                 filename: "completed_file.zip",
                 status: .completed,
-                progress: 100,
+                progress: 1.0,
+                size: 1024 * 1024 * 50,
                 speed: nil,
-                targetPath: "/downloads",
-                createdAt: Date().addingTimeInterval(-3600),
-                updatedAt: Date()
+                addedAt: Date().addingTimeInterval(-3600),
+                startedAt: Date().addingTimeInterval(-3500),
+                completedAt: Date(),
+                errorMessage: nil,
+                pathId: 1
             ),
             onCancel: {}
         )

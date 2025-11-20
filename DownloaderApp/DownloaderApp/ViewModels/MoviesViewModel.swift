@@ -70,7 +70,7 @@ class MoviesViewModel: ObservableObject {
         }
     }
     
-    func getLinksAndDownload(quality: MovieQuality, targetPath: String? = nil) async -> Bool {
+    func getLinksAndDownload(quality: MovieQuality, pathId: Int? = nil) async -> Bool {
         isLoading = true
         errorMessage = nil
         
@@ -86,7 +86,7 @@ class MoviesViewModel: ObservableObject {
             // We use the first link found. In a more advanced version, we could let user choose if multiple.
             _ = try await downloadService.addDownload(
                 url: firstLink,
-                pathId: targetPath
+                pathId: pathId
             )
             
             isLoading = false

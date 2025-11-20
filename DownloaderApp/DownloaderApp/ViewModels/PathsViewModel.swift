@@ -51,12 +51,8 @@ class PathsViewModel: ObservableObject {
         
         do {
             try await pathService.setDefaultPath(id: path.id)
-            // Update local state
-            paths = paths.map { p in
-                var updated = p
-                updated.isDefault = (p.id == path.id)
-                return updated
-            }
+            // Refresh paths to get updated default status
+            await fetchPaths()
         } catch {
             errorMessage = error.localizedDescription
         }
@@ -66,9 +62,7 @@ class PathsViewModel: ObservableObject {
         errorMessage = nil
         
         do {
-            // First try to delete from backend
-            try await pathService.deletePath(name: path.name)
-            // Only remove from local state if backend deletion succeeded
+            try await pathService.deletePath(id: path.id)
             paths.removeAll { $0.id == path.id }
         } catch {
             errorMessage = error.localizedDescription

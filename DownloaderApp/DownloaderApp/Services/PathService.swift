@@ -33,28 +33,27 @@ class PathService {
     
     func addPath(name: String, path: String) async throws -> DownloadPath {
         let request = AddPathRequest(name: name, path: path)
-        let response: PathActionResponse = try await client.post(Constants.Endpoints.paths, body: request)
+        struct AddPathResponse: Codable {
+            let success: Bool
+            let path: DownloadPath?
+        }
         
-        if response.success {
-            // Backend doesn't return the created path, so create a temporary one
-            return DownloadPath(id: UUID().uuidString, name: name, path: path)
+        let response: AddPathResponse = try await client.post(Constants.Endpoints.paths, body: request)
+        
+        if response.success, let path = response.path {
+            return path
         } else {
             throw APIError.serverError("Failed to add path")
         }
     }
     
-    func setDefaultPath(id: String) async throws {
-        // Backend doesn't have this endpoint, so we'll skip it
-        // This feature won't work until backend adds support
+    func setDefaultPath(id: Int) async throws {
+        let endpoint = "\(Constants.Endpoints.paths)/\(id)/default"
+        let _: PathActionResponse = try await client.put(endpoint, body: ["": ""]) // Empty body
     }
     
-    func deletePath(name: String) async throws {
-        // Backend uses query parameter for delete
-        guard let encodedName = name.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
-            throw APIError.invalidURL
-        }
-        
-        let endpoint = "\(Constants.Endpoints.paths)?name=\(encodedName)"
+    func deletePath(id: Int) async throws {
+        let endpoint = "\(Constants.Endpoints.paths)/\(id)"
         let response: PathActionResponse = try await client.delete(endpoint)
         
         if !response.success {

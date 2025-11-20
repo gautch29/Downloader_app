@@ -13,8 +13,12 @@ struct DownloadsResponse: Codable {
 
 struct AddDownloadRequest: Codable {
     let url: String
-    let customFilename: String?
-    let targetPath: String?
+    let pathId: Int?
+    
+    enum CodingKeys: String, CodingKey {
+        case url
+        case pathId = "path_id"
+    }
 }
 
 struct AddDownloadResponse: Codable {
@@ -33,11 +37,10 @@ class DownloadService {
         return response.downloads
     }
     
-    func addDownload(url: String, pathId: String? = nil) async throws -> Download {
+    func addDownload(url: String, pathId: Int? = nil) async throws -> Download {
         let request = AddDownloadRequest(
             url: url,
-            customFilename: nil,
-            targetPath: pathId
+            pathId: pathId
         )
         let response: AddDownloadResponse = try await client.post(Constants.Endpoints.downloads, body: request)
         
@@ -48,7 +51,7 @@ class DownloadService {
         }
     }
     
-    func cancelDownload(id: String) async throws {
+    func cancelDownload(id: Int) async throws {
         // Backend doesn't have cancel endpoint in the docs, so this might not work
         // We'll just make a DELETE request and see
         let endpoint = "\(Constants.Endpoints.downloads)/\(id)"
@@ -56,7 +59,7 @@ class DownloadService {
         let _: EmptyResponse = try await client.delete(endpoint)
     }
     
-    func getDownloadDetails(id: String) async throws -> Download {
+    func getDownloadDetails(id: Int) async throws -> Download {
         let endpoint = "\(Constants.Endpoints.downloads)/\(id)"
         return try await client.get(endpoint)
     }

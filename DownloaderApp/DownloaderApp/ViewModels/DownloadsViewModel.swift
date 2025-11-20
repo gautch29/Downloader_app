@@ -55,7 +55,7 @@ class DownloadsViewModel: ObservableObject {
         isLoading = false
     }
     
-    func addDownload(url: String, pathId: String? = nil) async -> Bool {
+    func addDownload(url: String, pathId: Int? = nil) async -> Bool {
         errorMessage = nil
         
         do {

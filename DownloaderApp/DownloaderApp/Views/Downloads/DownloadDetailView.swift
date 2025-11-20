@@ -29,7 +29,7 @@ struct DownloadDetailView: View {
                             Text("\(download.progressPercentage)%")
                                 .foregroundStyle(.secondary)
                         }
-                        ProgressView(value: download.progressDecimal)
+                        ProgressView(value: download.progress ?? 0)
                     }
                     
                     if download.speed != nil {
@@ -41,6 +41,16 @@ struct DownloadDetailView: View {
                         }
                     }
                 }
+                
+                if let errorMessage = download.errorMessage {
+                    HStack {
+                        Text("Error")
+                        Spacer()
+                        Text(errorMessage)
+                            .foregroundStyle(.red)
+                            .multilineTextAlignment(.trailing)
+                    }
+                }
             }
             
             Section("Details") {
@@ -48,8 +58,12 @@ struct DownloadDetailView: View {
                 
                 DetailRow(label: "Added", value: download.addedAt.formatted())
                 
-                if let targetPath = download.targetPath {
-                    DetailRow(label: "Path", value: targetPath)
+                if let size = download.size {
+                    DetailRow(label: "Size", value: download.formattedSize)
+                }
+                
+                if let pathId = download.pathId {
+                    DetailRow(label: "Path ID", value: String(pathId))
                 }
             }
             
@@ -96,15 +110,18 @@ struct DetailRow: View {
     NavigationStack {
         DownloadDetailView(
             download: Download(
-                id: "1",
+                id: 1,
                 url: "https://1fichier.com/example",
                 filename: "example_file.zip",
                 status: .downloading,
-                progress: 65,
-                speed: "5 MB/s",
-                targetPath: "/downloads",
-                createdAt: Date(),
-                updatedAt: Date()
+                progress: 0.65,
+                size: 1024 * 1024 * 100,
+                speed: 1024 * 1024 * 5,
+                addedAt: Date(),
+                startedAt: Date(),
+                completedAt: nil,
+                errorMessage: nil,
+                pathId: 1
             ),
             viewModel: DownloadsViewModel()
         )
