@@ -65,18 +65,14 @@ class PathsViewModel: ObservableObject {
     func deletePath(_ path: DownloadPath) async {
         errorMessage = nil
         
-        // Optimistically remove from UI
-        let originalPaths = paths
-        paths.removeAll { $0.id == path.id }
-        
         do {
+            // First try to delete from backend
             try await pathService.deletePath(name: path.name)
-            // Successfully deleted, refresh to ensure sync with backend
-            await fetchPaths()
+            // Only remove from local state if backend deletion succeeded
+            paths.removeAll { $0.id == path.id }
         } catch {
-            // Restore on error
-            paths = originalPaths
             errorMessage = error.localizedDescription
+            print("Failed to delete path: \(error)")
         }
     }
 }

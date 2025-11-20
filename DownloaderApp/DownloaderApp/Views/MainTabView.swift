@@ -22,6 +22,11 @@ struct MainTabView: View {
                     Label("Paths", systemImage: "folder")
                 }
             
+            MovieSearchView()
+                .tabItem {
+                    Label("Search", systemImage: "magnifyingglass")
+                }
+            
             SettingsView()
                 .tabItem {
                     Label("Settings", systemImage: "gear")
