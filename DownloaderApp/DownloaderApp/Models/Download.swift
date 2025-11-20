@@ -20,7 +20,6 @@ struct Download: Codable, Identifiable {
     let startedAt: Date?
     let completedAt: Date?
     let errorMessage: String?
-    let pathId: Int?
     let targetPath: String?
     
     enum CodingKeys: String, CodingKey {
@@ -28,9 +27,9 @@ struct Download: Codable, Identifiable {
         case customFilename = "customFilename"
         case targetPath = "targetPath"
         case addedAt = "createdAt"
-        case startedAt = "updatedAt" // Mapping startedAt to updatedAt as it seems to be the closest equivalent
-        case completedAt = "completed_at" // Keep this if backend adds it later, or make optional
-        case errorMessage = "error" // Backend returns "error" key
+        case startedAt = "updatedAt"
+        case completedAt = "completed_at"
+        case errorMessage = "error"
     }
     
     init(from decoder: Decoder) throws {
@@ -57,14 +56,11 @@ struct Download: Codable, Identifiable {
         self.completedAt = try container.decodeIfPresent(Date.self, forKey: .completedAt)
         self.errorMessage = try container.decodeIfPresent(String.self, forKey: .errorMessage)
         
-        // pathId is removed/ignored as backend uses targetPath
-        self.pathId = nil
-        
         self.targetPath = try container.decodeIfPresent(String.self, forKey: .targetPath)
     }
     
     // Default init for previews/tests
-    init(id: Int, url: String, filename: String? = nil, customFilename: String? = nil, status: DownloadStatus, progress: Double? = nil, size: Int64? = nil, speed: Int64? = nil, addedAt: Date, startedAt: Date? = nil, completedAt: Date? = nil, errorMessage: String? = nil, pathId: Int? = nil, targetPath: String? = nil) {
+    init(id: Int, url: String, filename: String? = nil, customFilename: String? = nil, status: DownloadStatus, progress: Double? = nil, size: Int64? = nil, speed: Int64? = nil, addedAt: Date, startedAt: Date? = nil, completedAt: Date? = nil, errorMessage: String? = nil, targetPath: String? = nil) {
         self.id = id
         self.url = url
         self.filename = filename
@@ -77,7 +73,6 @@ struct Download: Codable, Identifiable {
         self.startedAt = startedAt
         self.completedAt = completedAt
         self.errorMessage = errorMessage
-        self.pathId = pathId
         self.targetPath = targetPath
     }
     
