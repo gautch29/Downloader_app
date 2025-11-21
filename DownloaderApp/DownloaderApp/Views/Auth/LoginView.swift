@@ -20,34 +20,53 @@ struct LoginView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                // Background
-                LinearGradient(colors: [.blue.opacity(0.3), .purple.opacity(0.3)], startPoint: .topLeading, endPoint: .bottomTrailing)
-                    .ignoresSafeArea()
+                // Subtle gradient background
+                LinearGradient(
+                    colors: [
+                        Color(red: 0.95, green: 0.97, blue: 1.0),
+                        Color(red: 0.92, green: 0.96, blue: 0.99)
+                    ],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .ignoresSafeArea()
                 
                 ScrollView {
-                    VStack(spacing: 40) {
+                    VStack(spacing: 50) {
                         // Logo/Title
-                        VStack(spacing: 16) {
-                            Image(systemName: "arrow.down.circle.fill")
-                                .font(.system(size: 100))
-                                .foregroundStyle(
-                                    LinearGradient(colors: [.blue, .purple], startPoint: .topLeading, endPoint: .bottomTrailing)
-                                )
-                                .shadow(color: .blue.opacity(0.3), radius: 10, x: 0, y: 5)
+                        VStack(spacing: 20) {
+                            // Liquid glass icon container
+                            ZStack {
+                                Circle()
+                                    .fill(.ultraThinMaterial)
+                                    .frame(width: 120, height: 120)
+                                    .shadow(color: Color.blue.opacity(0.15), radius: 20, x: 0, y: 10)
+                                
+                                Image(systemName: "arrow.down.circle.fill")
+                                    .font(.system(size: 60))
+                                    .foregroundStyle(
+                                        LinearGradient(
+                                            colors: [Color.blue, Color.cyan],
+                                            startPoint: .topLeading,
+                                            endPoint: .bottomTrailing
+                                        )
+                                    )
+                            }
                             
                             Text("Downloader")
-                                .font(.system(size: 40, weight: .bold, design: .rounded))
+                                .font(.system(size: 36, weight: .semibold, design: .rounded))
                                 .foregroundStyle(.primary)
                             
                             Text("Welcome back")
-                                .font(.title3)
+                                .font(.subheadline)
                                 .foregroundStyle(.secondary)
+                                .fontWeight(.medium)
                         }
-                        .padding(.top, 60)
+                        .padding(.top, 80)
                         
-                        // Login Form
-                        VStack(spacing: 24) {
-                            VStack(spacing: 20) {
+                        // Login Form - Liquid glass card
+                        VStack(spacing: 20) {
+                            VStack(spacing: 16) {
                                 CustomTextField(icon: "person.fill", placeholder: "Username", text: $username)
                                     .textContentType(.username)
                                     .textInputAutocapitalization(.never)
@@ -68,8 +87,8 @@ struct LoginView: View {
                             }
                             
                             if let errorMessage = viewModel.errorMessage {
-                                HStack {
-                                    Image(systemName: "exclamationmark.triangle.fill")
+                                HStack(spacing: 8) {
+                                    Image(systemName: "exclamationmark.circle.fill")
                                     Text(errorMessage)
                                 }
                                 .font(.caption)
@@ -88,29 +107,37 @@ struct LoginView: View {
                                     } else {
                                         Text("Sign In")
                                             .font(.headline)
+                                            .fontWeight(.semibold)
                                     }
                                 }
                                 .frame(maxWidth: .infinity)
-                                .frame(height: 50)
+                                .frame(height: 52)
                                 .background(
-                                    LinearGradient(colors: [.blue, .purple], startPoint: .leading, endPoint: .trailing)
+                                    LinearGradient(
+                                        colors: [Color.blue, Color.cyan],
+                                        startPoint: .leading,
+                                        endPoint: .trailing
+                                    )
                                 )
                                 .foregroundStyle(.white)
-                                .clipShape(RoundedRectangle(cornerRadius: 16))
-                                .shadow(color: .blue.opacity(0.3), radius: 5, x: 0, y: 5)
+                                .clipShape(RoundedRectangle(cornerRadius: 14))
+                                .shadow(color: Color.blue.opacity(0.25), radius: 8, x: 0, y: 4)
                             }
                             .disabled(username.isEmpty || password.isEmpty || viewModel.isLoading)
-                            .opacity(username.isEmpty || password.isEmpty || viewModel.isLoading ? 0.7 : 1)
+                            .opacity(username.isEmpty || password.isEmpty || viewModel.isLoading ? 0.6 : 1)
+                            .animation(.easeInOut(duration: 0.2), value: username.isEmpty || password.isEmpty || viewModel.isLoading)
                         }
-                        .padding(32)
+                        .padding(28)
                         .background(.ultraThinMaterial)
-                        .clipShape(RoundedRectangle(cornerRadius: 24))
-                        .shadow(color: .black.opacity(0.1), radius: 10, x: 0, y: 5)
-                        .padding(.horizontal)
+                        .clipShape(RoundedRectangle(cornerRadius: 20))
+                        .shadow(color: Color.black.opacity(0.08), radius: 15, x: 0, y: 8)
+                        .padding(.horizontal, 24)
+                        
+                        Spacer()
                     }
                 }
             }
-            .navigationTitle("") // Hide default title
+            .navigationTitle("")
         }
     }
     
@@ -127,16 +154,31 @@ struct CustomTextField: View {
     @Binding var text: String
     
     var body: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: 14) {
             Image(systemName: icon)
-                .foregroundStyle(.secondary)
-                .frame(width: 24)
+                .foregroundStyle(
+                    LinearGradient(
+                        colors: [Color.blue.opacity(0.7), Color.cyan.opacity(0.7)],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+                .frame(width: 20)
+                .font(.system(size: 16))
             
             TextField(placeholder, text: $text)
+                .font(.body)
         }
-        .padding()
-        .background(Color(uiColor: .secondarySystemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .padding(.horizontal, 16)
+        .padding(.vertical, 14)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color(uiColor: .systemBackground))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(Color.gray.opacity(0.15), lineWidth: 1)
+                )
+        )
     }
 }
 
@@ -146,16 +188,31 @@ struct CustomSecureField: View {
     @Binding var text: String
     
     var body: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: 14) {
             Image(systemName: icon)
-                .foregroundStyle(.secondary)
-                .frame(width: 24)
+                .foregroundStyle(
+                    LinearGradient(
+                        colors: [Color.blue.opacity(0.7), Color.cyan.opacity(0.7)],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+                .frame(width: 20)
+                .font(.system(size: 16))
             
             SecureField(placeholder, text: $text)
+                .font(.body)
         }
-        .padding()
-        .background(Color(uiColor: .secondarySystemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .padding(.horizontal, 16)
+        .padding(.vertical, 14)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color(uiColor: .systemBackground))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(Color.gray.opacity(0.15), lineWidth: 1)
+                )
+        )
     }
 }
 
