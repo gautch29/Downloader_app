@@ -25,6 +25,8 @@ enum Constants {
         static let settings = "/api/settings"
         static let searchMovies = "/api/movies/search"
         static let movieLinks = "/api/movies/links"
+        static let searchSeries = "/api/series/search"
+        static let seriesLinks = "/api/series/links"
     }
     
     // Refresh Intervals

@@ -24,6 +24,11 @@ struct MainTabView: View {
                     Label("Search", systemImage: "magnifyingglass")
                 }
             
+            SeriesSearchView()
+                .tabItem {
+                    Label("Series", systemImage: "tv")
+                }
+            
             SettingsView()
                 .tabItem {
                     Label("Settings", systemImage: "gear")
