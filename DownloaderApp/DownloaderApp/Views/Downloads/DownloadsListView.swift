@@ -13,6 +13,7 @@ struct DownloadsListView: View {
     @State private var showingAddDownload = false
     @Environment(\.scenePhase) var scenePhase
     @State private var selectedFilter: FilterOption = .all
+    @State private var sheetInitialURL = ""
     
     enum FilterOption: String, CaseIterable {
         case all = "All"
@@ -93,6 +94,7 @@ struct DownloadsListView: View {
                 
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
+                        sheetInitialURL = ""
                         showingAddDownload = true
                     } label: {
                         Label("Add Download", systemImage: "plus")
@@ -103,7 +105,7 @@ struct DownloadsListView: View {
                 AddDownloadView(
                     downloadsViewModel: viewModel,
                     pathsViewModel: pathsViewModel,
-                    initialUrl: viewModel.clipboardURL ?? ""
+                    initialUrl: sheetInitialURL
                 )
             }
             .task {
@@ -116,6 +118,7 @@ struct DownloadsListView: View {
             set: { if !$0 { viewModel.clipboardURL = nil } }
         )) {
             Button("Download") {
+                sheetInitialURL = viewModel.clipboardURL ?? ""
                 showingAddDownload = true
             }
             Button("Cancel", role: .cancel) {
