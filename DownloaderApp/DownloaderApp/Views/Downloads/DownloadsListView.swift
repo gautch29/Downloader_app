@@ -34,34 +34,8 @@ struct DownloadsListView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
-                if let clipboardURL = viewModel.clipboardURL {
-                    VStack {
-                        HStack {
-                            Image(systemName: "doc.on.clipboard")
-                                .foregroundStyle(.blue)
-                            VStack(alignment: .leading) {
-                                Text("Link found in clipboard")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                                Text(clipboardURL)
-                                    .font(.caption)
-                                    .lineLimit(1)
-                            }
-                            Spacer()
-                            Button("Add") {
-                                showingAddDownload = true
-                            }
-                            .buttonStyle(.borderedProminent)
-                            .controlSize(.small)
-                        }
-                        .padding()
-                        .background(Color(uiColor: .secondarySystemGroupedBackground))
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
-                        .shadow(radius: 2)
-                    }
-                    .padding()
-                    .transition(.move(edge: .top).combined(with: .opacity))
-                }
+                // Clipboard banner removed
+
                 
                 Group {
                     if viewModel.isLoading && viewModel.downloads.isEmpty {
@@ -134,6 +108,22 @@ struct DownloadsListView: View {
             }
             .task {
                 await viewModel.fetchDownloads()
+            }
+            // Hidden button for keyboard shortcut removed
+        }
+        .alert("Link Detected", isPresented: Binding(
+            get: { viewModel.clipboardURL != nil },
+            set: { if !$0 { viewModel.clipboardURL = nil } }
+        )) {
+            Button("Download") {
+                showingAddDownload = true
+            }
+            Button("Cancel", role: .cancel) {
+                viewModel.clipboardURL = nil
+            }
+        } message: {
+            if let url = viewModel.clipboardURL {
+                Text("Found 1fichier link:\n\(url)")
             }
         }
     }

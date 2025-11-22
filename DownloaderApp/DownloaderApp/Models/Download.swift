@@ -16,6 +16,7 @@ struct Download: Codable, Identifiable {
     let progress: Double? // 0.0-1.0
     let size: Int64? // bytes
     let speed: Int64? // bytes/sec
+    let eta: Int? // seconds
     let addedAt: Date
     let startedAt: Date?
     let completedAt: Date?
@@ -23,7 +24,7 @@ struct Download: Codable, Identifiable {
     let targetPath: String?
     
     enum CodingKeys: String, CodingKey {
-        case id, url, filename, status, progress, size, speed
+        case id, url, filename, status, progress, size, speed, eta
         case customFilename = "customFilename"
         case targetPath = "targetPath"
         case addedAt = "createdAt"
@@ -51,6 +52,7 @@ struct Download: Codable, Identifiable {
         self.progress = try container.decodeIfPresent(Double.self, forKey: .progress)
         self.size = try container.decodeIfPresent(Int64.self, forKey: .size)
         self.speed = try container.decodeIfPresent(Int64.self, forKey: .speed)
+        self.eta = try container.decodeIfPresent(Int.self, forKey: .eta)
         self.addedAt = try container.decode(Date.self, forKey: .addedAt)
         self.startedAt = try container.decodeIfPresent(Date.self, forKey: .startedAt)
         self.completedAt = try container.decodeIfPresent(Date.self, forKey: .completedAt)
@@ -60,7 +62,7 @@ struct Download: Codable, Identifiable {
     }
     
     // Default init for previews/tests
-    init(id: Int, url: String, filename: String? = nil, customFilename: String? = nil, status: DownloadStatus, progress: Double? = nil, size: Int64? = nil, speed: Int64? = nil, addedAt: Date, startedAt: Date? = nil, completedAt: Date? = nil, errorMessage: String? = nil, targetPath: String? = nil) {
+    init(id: Int, url: String, filename: String? = nil, customFilename: String? = nil, status: DownloadStatus, progress: Double? = nil, size: Int64? = nil, speed: Int64? = nil, eta: Int? = nil, addedAt: Date, startedAt: Date? = nil, completedAt: Date? = nil, errorMessage: String? = nil, targetPath: String? = nil) {
         self.id = id
         self.url = url
         self.filename = filename
@@ -69,6 +71,7 @@ struct Download: Codable, Identifiable {
         self.progress = progress
         self.size = size
         self.speed = speed
+        self.eta = eta
         self.addedAt = addedAt
         self.startedAt = startedAt
         self.completedAt = completedAt
@@ -79,6 +82,15 @@ struct Download: Codable, Identifiable {
     var progressPercentage: Int {
         guard let progress = progress else { return 0 }
         return Int(progress)
+    }
+    
+    var formattedETA: String {
+        guard let eta = eta else { return "" }
+        let formatter = DateComponentsFormatter()
+        formatter.allowedUnits = [.hour, .minute, .second]
+        formatter.unitsStyle = .abbreviated
+        formatter.maximumUnitCount = 2
+        return (formatter.string(from: TimeInterval(eta)) ?? "") + " remaining"
     }
     
     var formattedSpeed: String {

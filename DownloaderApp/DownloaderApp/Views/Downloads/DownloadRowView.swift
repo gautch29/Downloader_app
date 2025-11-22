@@ -37,9 +37,15 @@ struct DownloadRowView: View {
                     Spacer()
                     
                     if download.speed != nil {
-                        Text(download.formattedSpeed)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+                        HStack(spacing: 4) {
+                            Text(download.formattedSpeed)
+                            if download.eta != nil {
+                                Text("•")
+                                Text(download.formattedETA)
+                            }
+                        }
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
                     }
                 }
             }
