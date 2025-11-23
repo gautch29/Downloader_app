@@ -31,6 +31,8 @@ struct SeriesQuality: Codable, Identifiable {
     let quality: String
     let language: String
     let url: String
+    let fileSize: String?
+    let links: [String]?
     
     var displayQuality: String {
         quality.isEmpty ? "Unknown" : quality
@@ -42,23 +44,28 @@ struct SeriesQuality: Codable, Identifiable {
 }
 
 struct Episode: Codable, Identifiable {
-    var id: String { url }
-    let title: String
-    let url: String
-    let episodeNumber: String?
-    let seasonNumber: String?
+    let episode: String
+    let link: String
+    
+    var id: String { link }
     
     var displayTitle: String {
-        if let s = seasonNumber, let e = episodeNumber {
-            return "S\(s)E\(e) - \(title)"
-        }
-        return title
+        episode
+    }
+    
+    var url: String {
+        link
     }
 }
 
 struct SeriesSearchResponse: Codable {
-    let series: [Series]
+    let movies: [Series]  // API returns "movies" key for series too
     let total: Int?
+    
+    // Map to series for easier access
+    var series: [Series] {
+        movies
+    }
 }
 
 struct SeriesLinksRequest: Codable {
